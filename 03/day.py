@@ -49,7 +49,7 @@ def filter_numbers(numbers, use_most_common, bit=0):
 
     #print(target_value)
 
-    filtered = list(filter(lambda n: n[bit] == target_value, numbers))
+    filtered = [n for n in numbers if n[bit] == target_value]
     return filter_numbers(filtered, use_most_common, bit=bit+1)
 
 def solve_part_2(puzzle_input):
