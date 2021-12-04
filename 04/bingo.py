@@ -71,7 +71,6 @@ def get_puzzle_input():
 
 
 def solve_part_1(numbers, boards):
-    numbers, boards = puzzle_input
     for number in numbers:
         for board in boards:
             has_number = board.mark(number)
@@ -81,7 +80,6 @@ def solve_part_1(numbers, boards):
 
 
 def solve_part_2(numbers, boards):
-    numbers, boards = puzzle_input
     for number in numbers:
         for board in boards:
             has_number = board.mark(number)
