@@ -11,24 +11,18 @@ def get_puzzle_input():
 def cost_to_target(locations, target):
     return sum((abs(location - target) for location in locations))
 
-def solve_part_1(puzzle_input):
-    # The cheapest route is probably the average, right?
-    target = int(mean(puzzle_input))
-
+def solve_part_1(crab_locations):
     best_cost = 100000000000
-    for i in range(target * 10):
-        cost = cost_to_target(puzzle_input, i)
+    for i in range(min(crab_locations), max(crab_locations)):
+        cost = sum((abs(location - i) for location in crab_locations))
         best_cost = min(cost, best_cost)
 
     return best_cost
 
-def solve_part_2(puzzle_input):
-    # The cheapest route is probably the average, right?
-    target = int(mean(puzzle_input))
-
+def solve_part_2(crab_locations):
     best_cost = 100000000000
-    for i in range(target * 10):
-        cost = sum(((abs(location - target) + 1) * abs(location - target) // 2 for location in puzzle_input))
+    for i in range(min(crab_locations), max(crab_locations)):
+        cost = sum(((abs(location - i) + 1) * abs(location - i) // 2 for location in crab_locations))
         best_cost = min(cost, best_cost)
 
     return best_cost
