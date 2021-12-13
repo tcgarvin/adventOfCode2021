@@ -10,34 +10,32 @@ def get_puzzle_input():
                 puzzle_input[(i,j)] = int(c)
     return puzzle_input
 
-def increment(i,j,state):
-    state[(i,j)] += 1
+def increment(coords,state):
+    state[coords] += 1
     flashes = 0
-    if state[(i,j)] == 10:
-        #print("Flash", (i,j))
+    if state[coords] == 10:
+        i,j = coords
         flashes = 1
-        flashes += increment(i+1,j,state)
-        flashes += increment(i+1,j+1,state)
-        flashes += increment(i+1,j-1,state)
-        flashes += increment(i-1,j,state)
-        flashes += increment(i-1,j+1,state)
-        flashes += increment(i-1,j-1,state)
-        flashes += increment(i,j+1,state)
-        flashes += increment(i,j-1,state)
+        flashes += increment((i+1, j  ), state)
+        flashes += increment((i+1, j+1), state)
+        flashes += increment((i+1, j-1), state)
+        flashes += increment((i-1, j  ), state)
+        flashes += increment((i-1, j+1), state)
+        flashes += increment((i-1, j-1), state)
+        flashes += increment((i,   j+1), state)
+        flashes += increment((i,   j-1), state)
 
     return flashes
 
 
 def progress(state):
     flashes = 0
-    for i in range(10):
-        for j in range(10):
-            flashes += increment(i,j,state)
+    for coords in list(state.keys()):
+        flashes += increment(coords, state)
 
-    for i in range(10):
-        for j in range(10):
-            if state[(i,j)] >= 10:
-                state[(i,j)] = 0
+    for coords in list(state.keys()):
+        if state[coords] >= 10:
+            state[coords] = 0
     return flashes
 
 def solve_part_1(puzzle_input):
