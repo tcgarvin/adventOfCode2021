@@ -1,11 +1,10 @@
+from functools import reduce
 from rich import print
 
 def get_puzzle_input():
-    puzzle_input = []
     with open("input.txt") as input_txt:
         dots = set()
         folds = []
-        mode = 'dots'
         for line in input_txt:
             if "," in line:
                 coordinates = tuple(int(x) for x in line.strip().split(","))
@@ -15,45 +14,27 @@ def get_puzzle_input():
                 folds.append((axis, int(coord)))
     return (dots, folds)
 
-def solve_part_1(dots, folds):
-    fold = folds[0]
-    #print(fold)
-
-    # Hack: I already know it's over the x axis
-    x_coord = fold[1]
-    #print(x_coord)
-
-    new_dots = set()
+def fold_paper(dots, fold):
+    axis, coord = fold
+    folded = set()
     for x,y in dots:
-        if x > x_coord:
-            x = x_coord - (x - x_coord)
+        if axis == "x" and x > coord:
+            x = coord - (x - coord)
+        elif axis == "y" and y > coord:
+            y = coord - (y - coord)
+        folded.add((x,y))
+    return folded
 
-        new_dots.add((x,y))
-    return len(new_dots)
+def solve_part_1(dots, folds):
+    return len(fold_paper(dots, folds[0]))
 
 def solve_part_2(dots, folds):
-    for axis, coord in folds:
-        next_dots = set()
-        for x,y in dots:
-            if axis == "x" and x > coord:
-                x = coord - (x - coord)
-            elif axis == "y" and y > coord:
-                y = coord - (y - coord)
-
-            next_dots.add((x,y))
-
-        dots = next_dots
-
-    for y in range(10):
-        for x in range(50):
-            if (x,y) in dots:
-                print("#",end="")
-            else:
-                print(" ", end="")
-
+    dots = reduce(fold_paper, folds, dots)
+    for y in range(7):
+        for x in range(40):
+            dot = "#" if (x,y) in dots else " "
+            print(dot, end="")
         print("")
-
-    return ""
 
 if __name__ == "__main__":
     puzzle_input = get_puzzle_input()
@@ -61,5 +42,5 @@ if __name__ == "__main__":
     answer_1 = solve_part_1(*puzzle_input)
     print(f"Part 1: {answer_1}")
 
-    answer_2 = solve_part_2(*puzzle_input)
-    print(f"Part 2: {answer_2}")
+    print(f"Part 2:")
+    solve_part_2(*puzzle_input)
