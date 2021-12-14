@@ -1,6 +1,7 @@
 from collections import defaultdict
 from rich import print
 
+
 def get_puzzle_input():
     initial_state = []
     rules = {}
@@ -15,39 +16,14 @@ def get_puzzle_input():
 
     return (initial_state, rules)
 
-def solve_part_1(template, rules):
-    state = list(template)
-    #print(state)
-    for turn in range(10):
-        next_state = []
-        for i in range(len(state) - 1):
-            pair = tuple(state[i:i+2])
-            next_state.append(state[i])
-            if pair in rules:
-                next_state.append(rules[pair])
-        
-        next_state.append(state[-1])
-        state = next_state
-        #print(turn, state)
 
-    most_common_count = 0
-    least_common_count = 100000000000
-    for c in set(state):
-        count = state.count(c)
-        if count > most_common_count:
-            most_common_count = count
-        elif count < least_common_count:
-            least_common_count = count
-
-    return most_common_count - least_common_count
-
-def solve_part_2(initial_state, rules):
+def polymerize(template, rules, iterations):
     pairs = defaultdict(int)
-    for i in range(len(initial_state)-1):
-        pair = tuple(initial_state[i:i+2])
+    for i in range(len(template)-1):
+        pair = tuple(template[i:i+2])
         pairs[pair] += 1
 
-    for turn in range(40):
+    for _ in range(iterations):
         next_pairs = defaultdict(int)
         for pair, count in pairs.items():
             if pair in rules:
@@ -56,23 +32,28 @@ def solve_part_2(initial_state, rules):
                 next_pairs[(insert, pair[1])] += count
             else:
                 next_pairs[pair] += count
-
         pairs = next_pairs
 
     letter_counts = defaultdict(int)
     for pair, count in pairs.items():
         letter_counts[pair[0]] += count
-    letter_counts[initial_state[-1]] += 1
+    letter_counts[template[-1]] += 1
 
     most_common_count = 0
-    least_common_count = 100000000000000000
+    least_common_count = float('inf')
     for count in letter_counts.values():
-        if count > most_common_count:
-            most_common_count = count
-        elif count < least_common_count:
-            least_common_count = count
-
+        most_common_count = max(most_common_count, count)
+        least_common_count = min(least_common_count, count)
     return most_common_count - least_common_count
+
+
+def solve_part_1(template, rules):
+    return polymerize(template, rules, 10)
+
+
+def solve_part_2(template, rules):
+    return polymerize(template, rules, 40)
+
 
 if __name__ == "__main__":
     puzzle_input = get_puzzle_input()
