@@ -16,8 +16,7 @@ def find_cheapest_path(cavern):
     heap = [(0,(0,0))]
     location_costs = defaultdict(lambda: float('inf'))
     while len(heap) > 0:
-        current_cost, coords = heappop(heap)
-        i,j = coords
+        current_cost, (i,j) = heappop(heap)
         for neighbor in ((i,j+1), (i, j-1), (i+1, j), (i-1, j)):
             if neighbor not in cavern:
                 continue
