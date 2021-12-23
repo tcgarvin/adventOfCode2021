@@ -1,4 +1,3 @@
-from collections import defaultdict
 import re
 from rich import print
 
@@ -49,6 +48,17 @@ class BinarySpacePartition:
                 (self.zrange[1] - self.zrange[0]))
 
 
+    def split(self, axis, value):
+        left_extent = [self.xrange, self.yrange, self.zrange]
+        axis_default = left_extent[axis]
+        left_extent[axis] = (axis_default[0], value)
+        self._left = BinarySpacePartition(self.on, *left_extent)
+
+        right_extent = [self.xrange, self.yrange, self.zrange]
+        right_extent[axis] = (value, axis_default[1])
+        self._right = BinarySpacePartition(self.on, *right_extent)
+
+
     def intersects(self, xrange, yrange, zrange):
         # Seems like intersection is true unless we can identify a gap in a
         # particular axis?
@@ -89,28 +99,22 @@ class BinarySpacePartition:
 
         # This does not seem great
         elif self.xrange[0] < xrange[0]:
-            self._left = BinarySpacePartition(self.on, (self.xrange[0], xrange[0]), self.yrange, self.zrange)
-            self._right = BinarySpacePartition(self.on, (xrange[0], self.xrange[1]), self.yrange, self.zrange)
+            self.split(0, xrange[0])
 
         elif self.xrange[1] > xrange[1]:
-            self._left = BinarySpacePartition(self.on, (self.xrange[0], xrange[1]), self.yrange, self.zrange)
-            self._right = BinarySpacePartition(self.on, (xrange[1], self.xrange[1]), self.yrange, self.zrange)
+            self.split(0, xrange[1])
 
         elif self.yrange[0] < yrange[0]:
-            self._left = BinarySpacePartition(self.on, self.xrange, (self.yrange[0], yrange[0]), self.zrange)
-            self._right = BinarySpacePartition(self.on, self.xrange, (yrange[0], self.yrange[1]), self.zrange)
+            self.split(1, yrange[0])
 
         elif self.yrange[1] > yrange[1]:
-            self._left = BinarySpacePartition(self.on, self.xrange, (self.yrange[0], yrange[1]), self.zrange)
-            self._right = BinarySpacePartition(self.on, self.xrange, (yrange[1], self.yrange[1]), self.zrange)
+            self.split(1, yrange[1])
 
         elif self.zrange[0] < zrange[0]:
-            self._left = BinarySpacePartition(self.on, self.xrange, self.yrange, (self.zrange[0], zrange[0]))
-            self._right = BinarySpacePartition(self.on, self.xrange, self.yrange, (zrange[0], self.zrange[1]))
+            self.split(2, zrange[0])
 
         elif self.zrange[1] > zrange[1]:
-            self._left = BinarySpacePartition(self.on, self.xrange, self.yrange, (self.zrange[0], zrange[1]))
-            self._right = BinarySpacePartition(self.on, self.xrange, self.yrange, (zrange[1], self.zrange[1]))
+            self.split(2, zrange[1])
 
         self._left.apply_command(on, xrange, yrange, zrange)
         self._right.apply_command(on, xrange, yrange, zrange)
